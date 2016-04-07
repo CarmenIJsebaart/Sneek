@@ -21,20 +21,20 @@ int main()
 
   std::deque<sf::Vector2i> snake_player1 =
   {
-    sf::Vector2i(11, 10),
-    sf::Vector2i(11, 9),
-    sf::Vector2i(11, 8),
-    sf::Vector2i(11, 7),
-    sf::Vector2i(11, 6)
+    sf::Vector2i(8, 10),
+    sf::Vector2i(8, 9),
+    sf::Vector2i(8, 8),
+    sf::Vector2i(8, 7),
+    sf::Vector2i(8, 6)
   };
 
   std::deque<sf::Vector2i> snake_player2 =
   {
-    sf::Vector2i(9, 10),
-    sf::Vector2i(9, 9),
-    sf::Vector2i(9, 8),
-    sf::Vector2i(9, 7),
-    sf::Vector2i(9, 6)
+    sf::Vector2i(6, 10),
+    sf::Vector2i(6, 9),
+    sf::Vector2i(6, 8),
+    sf::Vector2i(6, 7),
+    sf::Vector2i(6, 6)
   };
 
   bool move_down_player1 = true;
@@ -47,7 +47,7 @@ int main()
   bool move_right_player2 = false;
   bool move_up_player2 = false;
 
-  sf::Vector2i fruit(10,14);
+  sf::Vector2i fruit(7,12);
 
   sf::Clock clock;
 
