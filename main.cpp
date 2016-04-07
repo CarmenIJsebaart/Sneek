@@ -3,6 +3,262 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+enum direction {DOWN, LEFT, RIGHT, UP};
+
+void change_direction(direction new_direction, bool &move_down, bool &move_left, bool &move_right, bool &move_up);
+void draw_snake(sf::RenderWindow &window, std::deque<sf::Vector2i> &snake, const int pixel_size);
+void move_down (std::deque<sf::Vector2i> &snake);
+void move_left (std::deque<sf::Vector2i> &snake);
+void move_right(std::deque<sf::Vector2i> &snake);
+void move_up   (std::deque<sf::Vector2i> &snake);
+void Rainbow(const double x, double& r, double& g, double& b) noexcept;
+
+
+int main()
+{
+  const int window_size = 600;
+  sf::RenderWindow window(sf::VideoMode(window_size, window_size), "Sneek", sf::Style::Titlebar | sf::Style::Close);
+
+  std::deque<sf::Vector2i> snake_player1 =
+  {
+    sf::Vector2i(11, 10),
+    sf::Vector2i(11, 9),
+    sf::Vector2i(11, 8),
+    sf::Vector2i(11, 7),
+    sf::Vector2i(11, 6)
+  };
+
+  std::deque<sf::Vector2i> snake_player2 =
+  {
+    sf::Vector2i(9, 10),
+    sf::Vector2i(9, 9),
+    sf::Vector2i(9, 8),
+    sf::Vector2i(9, 7),
+    sf::Vector2i(9, 6)
+  };
+
+  bool move_down_player1 = true;
+  bool move_left_player1 = false;
+  bool move_right_player1 = false;
+  bool move_up_player1 = false;
+
+  bool move_down_player2 = true;
+  bool move_left_player2 = false;
+  bool move_right_player2 = false;
+  bool move_up_player2 = false;
+
+  sf::Vector2i fruit(10,14);
+
+  sf::Clock clock;
+
+  while(window.isOpen())
+  {
+    sf::Event event;
+
+    while(window.pollEvent(event))
+    {
+      switch(event.type)
+      {
+        case sf::Event::Closed:
+          window.close();
+          break;
+        case sf::Event::KeyPressed:
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+          {
+            direction new_direction_player1 = DOWN;
+            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+          }
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+          {
+            direction new_direction_player1 = LEFT;
+            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+          }
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+          {
+            direction new_direction_player1 = RIGHT;
+            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+          }
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+          {
+            direction new_direction_player1 = UP;
+            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+          }
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+          {
+            direction new_direction_player2 = DOWN;
+            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+          }
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+          {
+            direction new_direction_player2 = LEFT;
+            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+          }
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+          {
+            direction new_direction_player2 = RIGHT;
+            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+          }
+          if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+          {
+            direction new_direction_player2 = UP;
+            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+          }
+        default:
+          break;
+      }
+    }
+
+    if(snake_player1.front() == fruit)
+    {
+      snake_player1.push_front(fruit);
+      const int fruit_x = rand() % 15;
+      const int fruit_y = rand() % 15;
+      fruit = sf::Vector2i(fruit_x, fruit_y);
+    }
+    else if(snake_player2.front() == fruit)
+    {
+      snake_player2.push_front(fruit);
+      const int fruit_x = rand() % 15;
+      const int fruit_y = rand() % 15;
+      fruit = sf::Vector2i(fruit_x, fruit_y);
+    }
+
+    const int pixel_size = 40;
+    sf::RectangleShape fruit_shape;
+    fruit_shape.setPosition(fruit.x * pixel_size, fruit.y * pixel_size);
+    fruit_shape.setSize(sf::Vector2f(pixel_size, pixel_size));
+
+    double update_time = 100; //milliseconds
+    if(clock.getElapsedTime().asMilliseconds() >= update_time)
+    {
+      if(move_down_player1  == true) { move_down (snake_player1); }
+      if(move_left_player1  == true) { move_left (snake_player1); }
+      if(move_right_player1 == true) { move_right(snake_player1); }
+      if(move_up_player1    == true) { move_up   (snake_player1); }
+      if(move_down_player2  == true) { move_down (snake_player2); }
+      if(move_left_player2  == true) { move_left (snake_player2); }
+      if(move_right_player2 == true) { move_right(snake_player2); }
+      if(move_up_player2    == true) { move_up   (snake_player2); }
+
+      clock.restart();
+    }
+
+    window.clear();
+    draw_snake(window, snake_player1, pixel_size);
+    draw_snake(window, snake_player2, pixel_size);
+    window.draw(fruit_shape);
+    window.display();
+  }
+}
+
+
+void change_direction(direction new_direction, bool &move_down, bool &move_left, bool &move_right, bool &move_up )
+{
+  if(new_direction == DOWN)
+  {
+    move_down = true;
+    move_left = false;
+    move_right = false;
+    move_up = false;
+  }
+  else if(new_direction == LEFT)
+  {
+    move_down = false;
+    move_left = true;
+    move_right = false;
+    move_up = false;
+  }
+  else if(new_direction == RIGHT)
+  {
+    move_down = false;
+    move_left = false;
+    move_right = true;
+    move_up = false;
+  }
+  else if(new_direction == UP)
+  {
+    move_down = false;
+    move_left = false;
+    move_right = false;
+    move_up = true;
+  }
+}
+void draw_snake(sf::RenderWindow &window, std::deque<sf::Vector2i> &snake, const int pixel_size)
+{
+  for(int i = 0; i != static_cast<int>(snake.size()); ++i)
+  {
+    const auto coordinat = snake[i];
+    const double f{static_cast<double>(i) / static_cast<int>(snake.size())};
+    double r, g, b;
+    Rainbow(f, r, g, b);
+
+    sf::RectangleShape s;
+    s.setFillColor(sf::Color(b * 255, g * 255, r * 255));
+    s.setPosition(coordinat.x * pixel_size, coordinat.y * pixel_size);
+    s.setSize(sf::Vector2f(pixel_size, pixel_size));
+    window.draw(s);
+  }
+}
+void move_down(std::deque<sf::Vector2i> &snake)
+{
+  if(snake.front().y == 14)
+  {
+    const sf::Vector2i new_head(snake.front().x, 0);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+  else
+  {
+    const sf::Vector2i new_head(snake.front().x, snake.front().y + 1);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+}
+void move_left(std::deque<sf::Vector2i> &snake)
+{
+  if(snake.front().x == 0)
+  {
+    const sf::Vector2i new_head(14, snake.front().y);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+  else
+  {
+    const sf::Vector2i new_head(snake.front().x - 1, snake.front().y);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+}
+void move_right(std::deque<sf::Vector2i> &snake)
+{
+  if(snake.front().x == 14)
+  {
+    const sf::Vector2i new_head(0, snake.front().y);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+  else
+  {
+    const sf::Vector2i new_head(snake.front().x + 1, snake.front().y);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+}
+void move_up(std::deque<sf::Vector2i> &snake)
+{
+  if(snake.front().y == 0)
+  {
+    const sf::Vector2i new_head(snake.front().x, 14);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+  else
+  {
+    const sf::Vector2i new_head(snake.front().x, snake.front().y - 1);
+    snake.push_front(new_head);
+    snake.pop_back();
+  }
+}
 void Rainbow(const double x, double& r, double& g, double& b) noexcept
 {
   const double pi{3.14159};
@@ -22,173 +278,4 @@ void Rainbow(const double x, double& r, double& g, double& b) noexcept
   r = f_r / max;
   g = f_g / max;
   b = f_b / max;
-}
-
-int main()
-{
-  const int window_size = 600;
-  sf::RenderWindow window(sf::VideoMode(window_size, window_size), "Sneek", sf::Style::Titlebar | sf::Style::Close);
-
-  sf::Vector2i fruit(10,14);
-
-  bool move_down = true;
-  bool move_left = false;
-  bool move_right = false;
-  bool move_up = false;
-
-  std::deque<sf::Vector2i> snake =
-  {
-    sf::Vector2i(10,10),
-    sf::Vector2i(10,9),
-    sf::Vector2i(10,8),
-    sf::Vector2i(10,7),
-    sf::Vector2i(10,6)
-  };
-
-  sf::Clock clock;
-
-  while(window.isOpen())
-  {
-    sf::Event event;
-
-    while(window.pollEvent(event))
-    {      
-      switch(event.type)
-      {
-        case sf::Event::Closed:
-          window.close();
-          break;
-        case sf::Event::KeyPressed:
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-          {
-            move_down = true;
-            move_left = false;
-            move_right = false;
-            move_up = false;
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-          {
-            move_down = false;
-            move_left = true;
-            move_right = false;
-            move_up = false;
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-          {
-            move_down = false;
-            move_left = false;
-            move_right = true;
-            move_up = false;
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-          {
-            move_down = false;
-            move_left = false;
-            move_right = false;
-            move_up = true;
-          }
-        default:
-          break;
-      }
-    }
-
-    if (snake.front() == fruit)
-    {
-      snake.push_front(fruit);
-      const int fruit_x = rand() % 15;
-      const int fruit_y = rand() % 15;
-      fruit = sf::Vector2i(fruit_x, fruit_y);
-    }
-
-    sf::RectangleShape fruit_shape;
-    fruit_shape.setPosition(fruit.x * 40.0, fruit.y * 40.0);
-    fruit_shape.setSize(sf::Vector2f(40,40));
-
-    double update_time = 100; //milliseconds
-
-    if(clock.getElapsedTime().asMilliseconds() >= update_time)
-    {
-      if(move_down == true)
-      {
-        if(snake.front().y == 14)
-        {
-          const sf::Vector2i new_head(snake.front().x, 0);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-        else
-        {
-          const sf::Vector2i new_head(snake.front().x, snake.front().y + 1);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-      }
-      if(move_left == true)
-      {
-        if(snake.front().x == 0)
-        {
-          const sf::Vector2i new_head(14, snake.front().y);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-        else
-        {
-          const sf::Vector2i new_head(snake.front().x - 1, snake.front().y);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-      }
-      if(move_right == true)
-      {
-        if(snake.front().x == 14)
-        {
-          const sf::Vector2i new_head(0, snake.front().y);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-        else
-        {
-          const sf::Vector2i new_head(snake.front().x + 1, snake.front().y);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-      }
-      if(move_up == true)
-      {
-        if(snake.front().y == 0)
-        {
-          const sf::Vector2i new_head(snake.front().x, 14);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-        else
-        {
-          const sf::Vector2i new_head(snake.front().x, snake.front().y - 1);
-          snake.push_front(new_head);
-          snake.pop_back();
-        }
-      }
-
-      clock.restart();
-    }
-
-    window.clear();
-
-    for(int i = 0; i != static_cast<int>(snake.size()); ++i)
-    {
-      const auto coordinat = snake[i];
-      const double f{static_cast<double>(i) / static_cast<int>(snake.size())};
-      double r, g, b;
-      Rainbow(f, r, g, b);
-
-      sf::RectangleShape s;
-      s.setFillColor(sf::Color(r * 255,g * 255, b * 255));
-      s.setPosition(coordinat.x * 40.0, coordinat.y * 40.0);
-      s.setSize(sf::Vector2f(40,40));
-      window.draw(s);
-    }
-
-    window.draw(fruit_shape);
-    window.display();
-  }
 }
