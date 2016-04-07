@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-enum direction {DOWN, LEFT, RIGHT, UP};
+enum class direction {down, left, right, up};
 
 void change_direction(direction new_direction, bool &move_down, bool &move_left, bool &move_right, bool &move_up);
 void draw_snake(sf::RenderWindow &window, std::deque<sf::Vector2i> &snake, const int pixel_size);
@@ -12,7 +12,6 @@ void move_left (std::deque<sf::Vector2i> &snake);
 void move_right(std::deque<sf::Vector2i> &snake);
 void move_up   (std::deque<sf::Vector2i> &snake);
 void Rainbow(const double x, double& r, double& g, double& b) noexcept;
-
 
 int main()
 {
@@ -65,42 +64,42 @@ int main()
         case sf::Event::KeyPressed:
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
           {
-            direction new_direction_player1 = DOWN;
+            direction new_direction_player1 = direction::down;
             change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
           }
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
           {
-            direction new_direction_player1 = LEFT;
+            direction new_direction_player1 = direction::left;
             change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
           }
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
           {
-            direction new_direction_player1 = RIGHT;
+            direction new_direction_player1 = direction::right;
             change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
           }
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
           {
-            direction new_direction_player1 = UP;
+            direction new_direction_player1 = direction::up;
             change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
           }
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
           {
-            direction new_direction_player2 = DOWN;
+            direction new_direction_player2 = direction::down;
             change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
           }
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
           {
-            direction new_direction_player2 = LEFT;
+            direction new_direction_player2 = direction::left;
             change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
           }
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
           {
-            direction new_direction_player2 = RIGHT;
+            direction new_direction_player2 = direction::right;
             change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
           }
           if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
           {
-            direction new_direction_player2 = UP;
+            direction new_direction_player2 = direction::up;
             change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
           }
         default:
@@ -154,28 +153,28 @@ int main()
 
 void change_direction(direction new_direction, bool &move_down, bool &move_left, bool &move_right, bool &move_up )
 {
-  if(new_direction == DOWN)
+  if(new_direction == direction::down)
   {
     move_down = true;
     move_left = false;
     move_right = false;
     move_up = false;
   }
-  else if(new_direction == LEFT)
+  else if(new_direction == direction::left)
   {
     move_down = false;
     move_left = true;
     move_right = false;
     move_up = false;
   }
-  else if(new_direction == RIGHT)
+  else if(new_direction == direction::right)
   {
     move_down = false;
     move_left = false;
     move_right = true;
     move_up = false;
   }
-  else if(new_direction == UP)
+  else if(new_direction == direction::up)
   {
     move_down = false;
     move_left = false;
