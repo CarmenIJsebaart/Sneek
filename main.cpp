@@ -6,10 +6,11 @@
 
 enum class direction {down, left, right, up};
 
-void catch_fruit(std::deque<sf::Vector2i> &snake_that_eats, sf::Vector2i &fruit);
+void catch_fruit(std::deque<sf::Vector2i> &snake_that_eats, sf::Vector2i &fruit, int &score);
 void change_direction(direction new_direction, bool &move_down, bool &move_left, bool &move_right, bool &move_up);
-void check_if_snake_is_eaten_by_itself(std::deque<sf::Vector2i> &snake);
-void check_if_snake_is_eaten_by_other_snake(std::deque<sf::Vector2i> &eating_snake, std::deque<sf::Vector2i> &to_be_eaten_snake);
+void score_on_screen(int &score, sf::Text &score_text, std::ostringstream &oss);
+void check_if_snake_is_eaten_by_itself(std::deque<sf::Vector2i> &snake, int &score);
+void check_if_snake_is_eaten_by_other_snake(std::deque<sf::Vector2i> &eating_snake, std::deque<sf::Vector2i> &to_be_eaten_snake, int &score_eating_snake, int &score_to_be_eaten_snake);
 void do_movement(std::deque<sf::Vector2i> &snake, bool move_down_snake, bool move_left_snake, bool move_right_snake, bool move_up_snake);
 void draw_snake(sf::RenderWindow &window, std::deque<sf::Vector2i> &snake, const int pixel_size);
 void move_down (std::deque<sf::Vector2i> &snake);
@@ -54,136 +55,193 @@ int main()
 
   sf::Vector2i fruit(10,12);
 
-  sf::Font font;
-  font.loadFromFile("arial.ttf");
+  sf::Font arial;
+  arial.loadFromFile("arial.ttf");
 
-  int player1_score = 0;
+  int score_player1 = 0;
   std::ostringstream oss1;
-  oss1 << player1_score;
-  sf::Text score_player1;
-  score_player1.setString(oss1.str());
-  score_player1.setFont(font);
-  score_player1.setCharacterSize(65);
-  score_player1.setPosition(sf::Vector2f(400, 0));
+  sf::Text score_text_player1;
+  score_text_player1.setFont(arial);
+  score_text_player1.setCharacterSize(65);
+  score_text_player1.setPosition(sf::Vector2f(400, 0));
+  score_on_screen(score_player1, score_text_player1, oss1);
 
-  int player2_score = 0;
+  int score_player2 = 0;
   std::ostringstream oss2;
-  oss2 << player2_score;
-  sf::Text score_player2;
-  score_player2.setString(oss2.str());
-  score_player2.setFont(font);
-  score_player2.setCharacterSize(65);
-  score_player2.setPosition(sf::Vector2f(10, 0));
+  sf::Text score_text_player2;
+  score_text_player2.setFont(arial);
+  score_text_player2.setCharacterSize(65);
+  score_text_player2.setPosition(sf::Vector2f(10, 0));
+  score_on_screen(score_player2, score_text_player2, oss2);
+
+  bool text_winner_player1 = false;
+  bool text_winner_player2 = false;
+
+  sf::Text winner_text_player1;
+  winner_text_player1.setFont(arial);
+  winner_text_player1.setCharacterSize(85);
+  winner_text_player1.setPosition(20, 250);
+  winner_text_player1.setString("Player 1 wins!!");
+
+  sf::Text winner_text_player2;
+  winner_text_player2.setFont(arial);
+  winner_text_player2.setCharacterSize(85);
+  winner_text_player2.setPosition(20, 250);
+  winner_text_player2.setString("Player 2 wins!!");
 
   sf::Clock clock;
 
   while(window.isOpen())
   {
-    sf::Event event;
-
-    while(window.pollEvent(event))
+    while(text_winner_player1 == false && text_winner_player2 == false)
     {
-      switch(event.type)
+      sf::Event event;
+
+      while(window.pollEvent(event))
       {
-        case sf::Event::Closed:
-          window.close();
-          break;
-        case sf::Event::KeyPressed:
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-          {
-            const direction new_direction_player1 = direction::down;
-            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-          {
-            const direction new_direction_player1 = direction::left;
-            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-          {
-            const direction new_direction_player1 = direction::right;
-            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-          {
-            const direction new_direction_player1 = direction::up;
-            change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-          {
-            const direction new_direction_player2 = direction::down;
-            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-          {
-            const direction new_direction_player2 = direction::left;
-            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-          {
-            const direction new_direction_player2 = direction::right;
-            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
-          }
-          if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-          {
-            const direction new_direction_player2 = direction::up;
-            change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
-          }
-          break;
-        default:
-          break;
+        switch(event.type)
+        {
+          case sf::Event::Closed:
+            window.close();
+            break;
+          case sf::Event::KeyPressed:
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            {
+              const direction new_direction_player1 = direction::down;
+              change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            {
+              const direction new_direction_player1 = direction::left;
+              change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            {
+              const direction new_direction_player1 = direction::right;
+              change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            {
+              const direction new_direction_player1 = direction::up;
+              change_direction(new_direction_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            {
+              const direction new_direction_player2 = direction::down;
+              change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            {
+              const direction new_direction_player2 = direction::left;
+              change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            {
+              const direction new_direction_player2 = direction::right;
+              change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+            }
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            {
+              const direction new_direction_player2 = direction::up;
+              change_direction(new_direction_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+            }
+            break;
+          default:
+            break;
+        }
       }
+
+      if(snake_player1.front() == fruit)
+      {
+        catch_fruit(snake_player1, fruit, score_player1);
+        score_on_screen(score_player1, score_text_player1, oss1);
+      }
+      else if(snake_player2.front() == fruit)
+      {
+        catch_fruit(snake_player2, fruit, score_player2);
+        score_on_screen(score_player2, score_text_player2, oss2);
+      }
+
+      const int pixel_size = 30;
+      sf::RectangleShape fruit_shape;
+      fruit_shape.setPosition(fruit.x * pixel_size, fruit.y * pixel_size);
+      fruit_shape.setSize(sf::Vector2f(pixel_size, pixel_size));
+
+      const double update_time = 115; //milliseconds
+      if(clock.getElapsedTime().asMilliseconds() >= update_time)
+      {
+        do_movement(snake_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
+        do_movement(snake_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
+        check_if_snake_is_eaten_by_other_snake(snake_player1, snake_player2, score_player1, score_player2);
+        score_on_screen(score_player1, score_text_player1, oss1);
+        check_if_snake_is_eaten_by_other_snake(snake_player2, snake_player1, score_player2, score_player1);
+        score_on_screen(score_player2, score_text_player2, oss2);
+        check_if_snake_is_eaten_by_itself(snake_player1, score_player1);
+        score_on_screen(score_player1, score_text_player1, oss1);
+        check_if_snake_is_eaten_by_itself(snake_player2, score_player2);
+        score_on_screen(score_player2, score_text_player2, oss2);
+        clock.restart();
+      }
+
+      if(score_player1 >= 10000)
+      {
+        text_winner_player1 = true;
+      }
+      else if(score_player2 >= 10000)
+      {
+        text_winner_player2 = true;
+      }
+
+      window.clear();
+      draw_snake(window, snake_player1, pixel_size);
+      draw_snake(window, snake_player2, pixel_size);
+      window.draw(fruit_shape);
+      window.draw(score_text_player1);
+      window.draw(score_text_player2);
+      window.display();
     }
 
-    if(snake_player1.front() == fruit)
+    while(text_winner_player1 == true)
     {
-      catch_fruit(snake_player1, fruit);
-      player1_score += 10;
-      oss1.str("");
-      oss1 << player1_score;
-      score_player1.setString(oss1.str());
-      std::cout << player1_score << std::endl;
+      sf::Event event;
+      while(window.pollEvent(event))
+      {
+        if(event.type == sf::Event::Closed)
+        {
+          window.close();
+        }
+      }
+      window.clear();
+      window.draw(winner_text_player1);
+      window.display();
     }
-    else if(snake_player2.front() == fruit)
+
+    while(text_winner_player2 == true)
     {
-      catch_fruit(snake_player2, fruit);
-      player2_score += 10;
-      oss2.str("");
-      oss2 << player2_score;
-      score_player2.setString(oss2.str());
-      std::cout << player2_score << std::endl;
+      sf::Event event;
+      while(window.pollEvent(event))
+      {
+        if(event.type == sf::Event::Closed)
+        {
+          window.close();
+        }
+      }
+      window.clear();
+      window.draw(winner_text_player2);
+      window.display();
     }
-
-    const int pixel_size = 30;
-    sf::RectangleShape fruit_shape;
-    fruit_shape.setPosition(fruit.x * pixel_size, fruit.y * pixel_size);
-    fruit_shape.setSize(sf::Vector2f(pixel_size, pixel_size));
-
-    const double update_time = 115; //milliseconds
-    if(clock.getElapsedTime().asMilliseconds() >= update_time)
-    {
-      do_movement(snake_player1, move_down_player1, move_left_player1, move_right_player1, move_up_player1);
-      do_movement(snake_player2, move_down_player2, move_left_player2, move_right_player2, move_up_player2);
-      check_if_snake_is_eaten_by_other_snake(snake_player1, snake_player2);
-      check_if_snake_is_eaten_by_other_snake(snake_player2, snake_player1);
-      check_if_snake_is_eaten_by_itself(snake_player1);
-      check_if_snake_is_eaten_by_itself(snake_player2);
-      clock.restart();
-    }
-
-    window.clear();
-    draw_snake(window, snake_player1, pixel_size);
-    draw_snake(window, snake_player2, pixel_size);
-    window.draw(fruit_shape);
-    window.draw(score_player1);
-    window.draw(score_player2);
-    window.display();
   }
 }
 
-void catch_fruit(std::deque<sf::Vector2i> &snake_that_eats, sf::Vector2i &fruit)
+void catch_fruit(std::deque<sf::Vector2i> &snake_that_eats, sf::Vector2i &fruit, int &score)
 {
   snake_that_eats.push_front(fruit);
+  score += 250;
+  if(score >= 10000)
+  {
+    score = 10000;
+  }
+  assert(score <= 10000);
   const int fruit_x = rand() % 15;
   const int fruit_y = rand() % 15;
   fruit = sf::Vector2i(fruit_x, fruit_y);
@@ -219,7 +277,7 @@ void change_direction(direction new_direction, bool &move_down, bool &move_left,
     move_up = true;
   }
 }
-void check_if_snake_is_eaten_by_itself(std::deque<sf::Vector2i> &snake)
+void check_if_snake_is_eaten_by_itself(std::deque<sf::Vector2i> &snake, int &score)
 {
   for(int i = 1; i < static_cast<int>(snake.size()); ++i)
   {
@@ -236,6 +294,12 @@ void check_if_snake_is_eaten_by_itself(std::deque<sf::Vector2i> &snake)
       {
         if(snake.size() > 3)
         {
+          score -= 125;
+          if(score < 0)
+          {
+            score = 0;
+          }
+          assert(score >= 0);
           snake.pop_back();
         }
       }
@@ -243,7 +307,7 @@ void check_if_snake_is_eaten_by_itself(std::deque<sf::Vector2i> &snake)
     }
   }
 }
-void check_if_snake_is_eaten_by_other_snake(std::deque<sf::Vector2i> &eating_snake, std::deque<sf::Vector2i> &to_be_eaten_snake)
+void check_if_snake_is_eaten_by_other_snake(std::deque<sf::Vector2i> &eating_snake, std::deque<sf::Vector2i> &to_be_eaten_snake, int &score_eating_snake, int &score_to_be_eaten_snake)
 {
   for(int i = 0; i < static_cast<int>(to_be_eaten_snake.size()); ++i)
   {
@@ -260,6 +324,18 @@ void check_if_snake_is_eaten_by_other_snake(std::deque<sf::Vector2i> &eating_sna
       {
         if(to_be_eaten_snake.size() > 3)
         {
+          score_eating_snake += 25;
+          score_to_be_eaten_snake -= 25;
+          if(score_eating_snake >= 10000)
+          {
+            score_eating_snake = 10000;
+          }
+          assert(score_eating_snake <= 10000);
+          if(score_to_be_eaten_snake < 0)
+          {
+            score_to_be_eaten_snake = 0;
+          }
+          assert(score_to_be_eaten_snake >= 0);
           to_be_eaten_snake.pop_back();
         }
       }
@@ -411,4 +487,10 @@ void rainbow(const double x, double& r, double& g, double& b) noexcept
   g = f_g / max;
   b = f_b / max;
   assert(!(r < 0.01 && g < 0.01 && b < 0.01));
+}
+void score_on_screen(int &score, sf::Text &score_text, std::ostringstream &oss)
+{
+  oss.str("");
+  oss << score;
+  score_text.setString(oss.str());
 }
