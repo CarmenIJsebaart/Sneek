@@ -1,7 +1,7 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG += qt
 
 SOURCES += main.cpp
 
@@ -21,3 +21,6 @@ LIBS += C:/Boost/stage/lib/libboost_filesystem-mgw49-mt-1_59.a
 LIBS += C:/Boost/stage/lib/libboost_system-mgw49-mt-d-1_59.a
 
 HEADERS +=
+
+RESOURCES += \
+    sneek.qrc

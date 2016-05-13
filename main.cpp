@@ -1,6 +1,7 @@
 #include <cassert>
 #include <deque>
 #include <iostream>
+#include <QFile>
 #include <SFML/Graphics.hpp>
 #include <sstream>
 
@@ -21,6 +22,8 @@ void rainbow(const double x, double& r, double& g, double& b) noexcept;
 
 int main()
 {
+  { QFile f(":/fonts/arial.ttf"); f.copy("arial.ttf"); }
+
   const int window_size = 600;
   sf::RenderWindow window(sf::VideoMode(window_size, window_size), "Sneek", sf::Style::Titlebar | sf::Style::Close);
   // player1 = right snake
